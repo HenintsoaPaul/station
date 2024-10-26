@@ -1,0 +1,146 @@
+<project name="deploy-ejb-station" default="deploy" basedir="./build-file">
+    <property environment="env"/>
+
+    <property name="deploy.dir" value="C:\wildfly-10.0.0.Final/standalone/deployments"/>
+
+    <property name="station-warname" value="station.war"/>
+    <property name="station-jarname" value="station-ejb.jar"/>
+    <property name="station-earname" value="station.ear"/>
+    <property name="srcejb-dir" value="./station-ejb/src/"/>
+    <property name="srcwar-dir" value="./station-war/src/java"/>
+
+    <property name="build-station-war_war" value="${basedir}/station_war"/>
+    <property name="build-station-ejb_jar" value="${basedir}/station_jar"/>
+    <property name="build-station-lib" value="${basedir}/lib"/>
+
+    <property name="buildEar.dir" value="${basedir}/ear"/>
+    <property name="webcontent.dir" value="../station-war/web"/>
+
+    <property name="srcproperties.dir" value="../station-ejb/src/java/resources"/>
+
+
+    <path id="classpath">
+        <fileset dir="${basedir}\lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+
+    <target name="clean">
+        <echo>
+            ---- Compilation station ----------------
+        </echo>
+        <echo>JDK ${ant.java.version} ${ant.version}</echo>
+        <echo>clean</echo>
+
+        <delete file="${build-station-ejb_jar}"/>
+        <delete file="${build-station-war_war}"/>
+        <delete file="${build-station-lib}"/>
+        <delete file="${basedir}/${station-earname}"/>
+        <delete file="${buildEar.dir}/${station-earname}"/>
+
+        <echo>clean done</echo>
+    </target>
+
+    <tstamp>
+        <format property="dateDuJour" pattern="dd/MM/yyyy hh:mm aa"/>
+    </tstamp>
+
+    <target name="init" depends="clean">
+        <echo>initialisation ${dateDuJour}</echo>
+
+        <mkdir dir="${build-station-war_war}"/>
+        <mkdir dir="${build-station-war_war}/WEB-INF"/>
+        <mkdir dir="${build-station-war_war}/WEB-INF/lib"/>
+        <mkdir dir="${build-station-war_war}/WEB-INF/classes"/>
+        <mkdir dir="${build-station-war_war}/META-INF"/>
+        <mkdir dir="${build-station-war_war}/WEB-INF/classes/META-INF"/>
+
+        <mkdir dir="${build-station-ejb_jar}"/>
+
+
+        <echo file="${webcontent.dir}/dateBuild.txt" append="false" message="${dateDuJour}"/>
+
+        <copy todir="${build-station-war_war}/">
+            <fileset dir="${webcontent.dir}" excludes="META-INF/**"/>
+        </copy>
+        <copy todir="${build-station-war_war}/META-INF">
+            <fileset dir="${webcontent.dir}/WEB-INF/META-INF"/>
+        </copy>
+        <copy todir="${build-station-war_war}/WEB-INF/lib/">
+            <fileset dir="${basedir}\lib"/>
+        </copy>
+
+        <copy file="../station-ejb/src/java/project.properties" tofile="${build-station-ejb_jar}/project.properties"/>
+        <copy file="../station-ejb/src/java/apj.properties" tofile="${build-station-ejb_jar}/apj.properties"/>
+        <copy file="../station-ejb/src/java/resources/text.properties"
+              tofile="${build-station-ejb_jar}/java/resources/text.properties"/>
+        <copy file="../station-ejb/src/java/resources/text_zh.properties"
+              tofile="${build-station-ejb_jar}/java/resources/text_zh.properties"/>
+        <echo>initialisation done</echo>
+        <copy todir="${build-station-war_war}/WEB-INF">
+            <fileset dir="./../station-war/web/WEB-INF" includes="**/*.xml"/>
+        </copy>
+    </target>
+
+    <target name="compile" depends="init">
+        <echo>compilation</echo>
+        <javac srcdir="../station-ejb/src/java" destdir="${build-station-ejb_jar}" nowarn="true" debug="on"
+               deprecation="off" classpathref="classpath" includeantruntime="false" encoding="iso-8859-1">
+        </javac>
+        <echo>compilation done</echo>
+    </target>
+
+    <target name="buildEjbJar" depends="compile">
+        <echo>Build EJB JAR</echo>
+        <jar basedir="${build-station-ejb_jar}" destfile="${buildEar.dir}/${station-jarname}"/>
+        <copy file="${buildEar.dir}/${station-jarname}" todir="${build-station-war_war}/WEB-INF/lib/">
+        </copy>
+        <echo>End Build EJB JAR</echo>
+    </target>
+
+    <target name="compileWar" depends="buildEjbJar">
+        <echo>compilation</echo>
+        <javac srcdir="../station-war/src/java" destdir="${build-station-war_war}/WEB-INF/classes/" nowarn="true"
+               debug="on" deprecation="off" classpathref="classpath" includeantruntime="false" encoding="iso-8859-1">
+            <classpath>
+                <pathelement location="${buildEar.dir}/${station-jarname}"/>
+            </classpath>
+        </javac>
+        <echo>compilation done</echo>
+    </target>
+
+
+    <target name="copieProperties" depends="compileWar">
+        <echo>Copie des properties</echo>
+        <copy file="${srcproperties.dir}/text.properties" todir="${build-station-war_war}/WEB-INF/classes">
+        </copy>
+        <copy file="${srcproperties.dir}/text_zh.properties" todir="${build-station-war_war}/WEB-INF/classes">
+        </copy>
+        <echo>Fin de la copie</echo>
+    </target>
+
+
+    <target name="deploy" depends="copieProperties">
+        <echo>${env.JBOSS_HOME}</echo>
+
+        <copy todir="./../../galana/build-file/lib">
+            <fileset file="${buildEar.dir}/${station-jarname}"/>
+        </copy>
+
+        <copy todir="${deploy.dir}/station.war">
+            <fileset dir="${build-station-war_war}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <touch file="${deploy.dir}/station.war.dodeploy"/>
+        <echo>deployement exploded war done</echo>
+        <echo>
+            Compilation station [DONE]----------------
+        </echo>
+
+    </target>
+
+
+</project>
