@@ -26,7 +26,7 @@ import vente.VenteLib;
  * @author dm
  */
 public class Prevision extends MvtCaisse{
-
+    
     private String id;
     private String compte;
     private double soldeInitial;
@@ -40,8 +40,8 @@ public class Prevision extends MvtCaisse{
     @Override
     public void setIdDevise(String idDevise) throws Exception {
         this.idDevise = idDevise;
-    }
-
+    } 
+    
     public boolean isDepense()
     {
         if(this.getDebit()>0&&this.getCredit()<=0) return true;
@@ -52,7 +52,7 @@ public class Prevision extends MvtCaisse{
         if(this.getCredit()==0)return false;
         return !isDepense();
     }
-
+    
     public String getId() {
         return id;
     }
@@ -117,16 +117,16 @@ public class Prevision extends MvtCaisse{
             if(canClose){
                 c.close();
             }
-        }
+        }  
     }
     @Override
     public void controler(Connection c) throws Exception {
         if((this.getCredit()==0&&this.getDebit()==0)) throw new Exception("Montant invalide");
     }
-
+    
        @Override
     public ClassMAPTable createObject(String u, Connection c) throws Exception{
-
+        
         return createObjectSF(u, c);
     }
 
@@ -142,13 +142,13 @@ public class Prevision extends MvtCaisse{
     {
         return null;
     }
-
+    
     public double calculerSoldeFinale(){
         double sfinal = this.getSoldeInitial() + this.getCredit() - this.getDebit();
         this.setSoldeFinale(sfinal);
         return this.getSoldeFinale();
-    }
-
+    }   
+    
     @Override
     public String[] getMotCles() {
         return new String[]{"id","compte","designation"};
@@ -176,10 +176,10 @@ public class Prevision extends MvtCaisse{
         }
         return null;
     }
-
+    
     public Prevision decaler(double montantDebit, double montantCredit, String devise, Date datyVaovao, String u, Connection c) throws Exception{
         double debit = this.getDebit();
-        double credit = this.getCredit();
+        double credit = this.getCredit();   
         if(debit < montantDebit){
             throw new Exception("Le montant saisi ne doit pas etre superieur au débit");
         }
@@ -196,7 +196,7 @@ public class Prevision extends MvtCaisse{
         credit -= montantCredit;
         this.updateToTableWithHisto(this, c);
         return nouvelle;
-
+        
     }
     public void scinderAndSave(int nombre,String u,Connection c) throws Exception
     {
@@ -224,7 +224,7 @@ public class Prevision extends MvtCaisse{
     {
         if(o.getNomChampTotalPrev()==null)throw new Exception ("Nom de champ de total de prevision non defini");
         Prevision vao=new Prevision();
-        Date d= Utilitaire.stringDate(CGenUtil.getValeurInsert(o, o.getNomChampDatyDuplique()));
+        java.sql.Date d= Utilitaire.stringDate(CGenUtil.getValeurInsert(o, o.getNomChampDatyDuplique()));
         double montant=Utilitaire.stringToDouble(CGenUtil.getValeurInsert(o,o.getNomChampTotalPrev()));
         String designation="prevision genere par : "+o.getTuppleID();
         vao.setEtat(1);
@@ -235,7 +235,7 @@ public class Prevision extends MvtCaisse{
         vao.setDesignation(designation);
         return vao;
     }
-    @Override
+    @Override 
     public void controlerUpdate(Connection c) throws Exception{
         MvtCaissePrevision[] mvt= (MvtCaissePrevision[]) CGenUtil.rechercher(new MvtCaissePrevision(),null,null, c," and id2='"+this.getId()+"'");
         double debitDejaPaye = AdminGen.calculSommeDouble(mvt,"montantMere");
@@ -249,8 +249,8 @@ public class Prevision extends MvtCaisse{
             throw new Exception("Montant credit deja paye superieur a montant");
         }
 
-    }
-
+    } 
+    
 }
 
 

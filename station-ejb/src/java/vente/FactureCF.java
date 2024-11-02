@@ -21,8 +21,8 @@ import utilitaire.UtilDB;
 public abstract class FactureCF extends  ClassMere{
     protected String id;
     protected String designation;
-    Date daty;
-    Date datyPrevu;
+    java.sql.Date daty;
+    java.sql.Date datyPrevu;
     protected double montantttc, montanttva, montantht,montantttcAr;
     public String getId() {
         return id;
@@ -34,7 +34,7 @@ public abstract class FactureCF extends  ClassMere{
     public void setMontantttcAr(double montantttcAr) {
         this.montantttcAr = montantttcAr;
     }
-
+    
 
     public void setId(String id) {
         this.id = id;
@@ -83,7 +83,7 @@ public abstract class FactureCF extends  ClassMere{
     public void setMontanttva(double montanttva) {
         this.montanttva = montanttva;
     }
-
+    
     public PrevisionComplet[] getPrevisions(String nomTable,Connection c) throws Exception{
         boolean estOuvert = false;
         try{
@@ -100,7 +100,7 @@ public abstract class FactureCF extends  ClassMere{
             throw e;
         } finally {
             if(estOuvert)c.close();
-        }
+        }     
     }
     public String  getTiers()
     {
@@ -108,7 +108,7 @@ public abstract class FactureCF extends  ClassMere{
     }
 
     public void controlerPlanPaiement(Prevision[] previsions, Connection c) throws Exception {
-
+        
         double debit = AdminGen.calculSommeDouble(previsions,"debit");
         double credit = AdminGen.calculSommeDouble(previsions,"credit");
 
@@ -117,7 +117,7 @@ public abstract class FactureCF extends  ClassMere{
             throw new Exception("Probleme dans le sens de paiement");
         }
     }
-
+ 
     public void  updatePlanPaiement(String u,Prevision[] previsions,Connection c) throws Exception{
         boolean estOuvert = false;
         try {
@@ -129,7 +129,7 @@ public abstract class FactureCF extends  ClassMere{
                 c = new UtilDB().GetConn();
                 c.setAutoCommit(false);
             }
-            FactureCF facture = (FactureCF) this.getById(this.getTuppleID(), this.getNomTable(), c);
+            FactureCF facture = (FactureCF) this.getById(this.getTuppleID(), this.getNomTable(), c); 
             // if(getTiers()==null)
             // {
             //     System.out.println("anaty tiers null");
@@ -145,21 +145,21 @@ public abstract class FactureCF extends  ClassMere{
                     throw new Exception("la date est superieur a la date de facturation");
                 }else{
                     if (previsions[i].getTuppleID() != null && !previsions[i].getTuppleID().isEmpty()) {
-
+           
                         previsions[i].updateToTableWithHisto(u, c);
                     } else {
                         previsions[i].setEtat(1);
                         previsions[i].setIdFacture(this.getTuppleID());
                         previsions[i].createObject(u, c);
                     }
-                }
+                }  
             }
-
+               
             PrevisionComplet[] prev= getPrevisions("prevision",c);
             double montant_somme = AdminGen.calculSommeDouble(prev,this.getSensPrev());
             double ecart =  facture.getMontantttcAr() - montant_somme;
             if( ecart != 0)
-            {
+            {   
                 throw new Exception("Montant total du plan de paiement different du montantttcAr ");
             }
         } catch (Exception e) {

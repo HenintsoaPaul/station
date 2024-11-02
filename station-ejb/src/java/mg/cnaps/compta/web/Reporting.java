@@ -15,7 +15,7 @@ import reporting.ReportingUtils;
  *
  * @author anthonyandrianaivoravelona
  */
-public class Reporting {
+public class Reporting { 
     private String nomJasper;
     private ReportingCdn.Fonctionnalite fonctionnalite;
     private String reportPath;
@@ -25,7 +25,7 @@ public class Reporting {
     private String idFiltre;
     private JasperPrint jp;
     private String fileName;
-    private TypeImpression typeImpression;
+    private Reporting.TypeImpression typeImpression;
     public enum TypeImpression {
         SERVEUR,SIMPLE,DEFAUT,MULTIPLE, MULTIPLESERVEUR
     }

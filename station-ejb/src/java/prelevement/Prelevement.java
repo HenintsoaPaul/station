@@ -20,7 +20,7 @@ import java.sql.Date;
 
 import magasin.Magasin;
 import pompe.Pompe;
-import user.MyUserEjbBean;
+//import user.MyUserEjbBean;
 import user.UserEJB;
 import user.UserEJBBean;
 import user.UserEJBClient;
@@ -348,8 +348,8 @@ public class Prelevement extends ClassEtat {
                 VenteDetails[] details = new VenteDetails[ 1 ];
                 details[ 0 ] = vd;
 
-                userEJBBean.createObjectMultipleGallois( v, "idVente", details, c );
-                System.out.println( "Générer la facture" );
+//                userEJBBean.createObjectMultipleGallois( v, "idVente", details, c );
+//                System.out.println( "Générer la facture" );
             }
             if ( estOuvert ) c.commit();
         } catch ( Exception e ) {

@@ -8,7 +8,7 @@ public class ComptaEtatBalance extends ClassMAPTable {
     private String compte, libelle_compte, gras, fond, compteDeuxChiffres, compteUnChiffre, typecompte;
     private boolean isTotaux;
     private double debit, credit, solde_debit, solde_credit, ant_debit, ant_credit;
-    private Date daty;
+    private java.sql.Date daty;
     private int exercice;
     private double debit_n, credit_n,
             debit_n_1, credit_n_1,
@@ -416,11 +416,11 @@ public class ComptaEtatBalance extends ClassMAPTable {
         this.credit_m_12 = credit_m_12;
     }
 
-    public void setAnt_debit( Date date) throws Exception {
+    public void setAnt_debit(java.sql.Date date) throws Exception {
         setAnt("Debit", date);
     }
 
-    public void setAnt_credit( Date date) throws Exception {
+    public void setAnt_credit(java.sql.Date date) throws Exception {
         setAnt("Credit", date);
     }
 
