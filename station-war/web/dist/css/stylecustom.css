@@ -1,0 +1,163 @@
+h1{
+    text-align:center;
+}
+#etatprevisionnelle{
+    overflow-x: auto;
+    scroll:x;
+    width: 100%;
+}
+#menuslider{
+    max-height:600px;
+    overflow-y: auto;
+}
+#export td{
+    width: 150px;
+}
+.loginBody{
+    margin-top:25px;
+}
+.currentMenu{
+    background:#103a8e !important;
+    color:white !important;
+}
+.td-content-center{
+    text-align: center;
+}
+body{
+    /* background-color: #1e282c;*/
+}
+a{cursor: pointer;}
+.form-control{
+    height: 25px;
+    padding: 3px;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 4px;
+}
+.box-header {
+    padding: 5px;
+		background:#719d6a;
+		color:white;
+}
+label {
+    margin-bottom: 0px;
+}
+.row {
+    margin-right: -18px;
+    margin-left: -18px;
+}
+.row.col-md-12 {
+    margin-left: 0px;
+    margin-right: -36px;
+}
+.box-body {
+    padding: 4px;
+}
+.input-group-addon {
+    padding: 6px 6px;
+    font-size: 11px;
+}   
+.box {
+    margin-bottom: 12px;
+}
+.box-insert{
+    width:100%;
+    position: relative;
+
+}
+
+.box-fiche{
+    width:100%;
+    position: relative;
+    /* margin-left: 150px; */
+    min-width: 100%;
+}
+
+
+#pdf {
+    width: 650px;
+    height: 600px;
+}
+textarea {
+    resize:none;
+}
+.form-group {
+    margin-bottom: 8px;
+}
+.content-wrapper, .right-side{padding-bottom: 15px;}
+
+table.table, label{
+    text-transform: capitalize;;
+}
+input.debit, input.credit, input.montant{
+    text-align: right;
+}
+.tableauaffiche{
+    padding-left: 10px; 
+}
+.triecolonne{
+    padding-right: 10px;
+}
+.triecolonne > box-primary{padding-bottom: 10px;}
+.containerColAffTrie{padding: 0;}
+#pagerecherche input.submit {
+    float: right;
+    margin-top: -25px;
+}
+
+#vehiculefiche{
+    color: white;
+} 
+
+.menupage{
+    margin-top: 25px;
+    background-image: url('../../assets/img/spat_fond.jpg');
+    background-repeat: no-repeat;
+    background-size: 55vh;
+    height: 80vh;
+    background-position: center;
+    background-color: white;
+    padding: 50px;
+}
+.singlebtn{
+    text-align: center;
+    margin-bottom: 90px
+}
+.menubtn{    
+    font-family: initial;
+    color:black;
+    border-radius: 15px;
+    font-size: 250%;
+    padding: 0 50px 0 50px;
+    background-color: #ff8a00;
+}
+.btnentete{ 
+    border-radius: 15px;
+    font-size: 200%;
+    padding: 0 50px 0 50px;
+}
+
+.singlebtn{
+    text-align: center;
+    margin-bottom: 90px;
+}
+.menu-container{
+    padding-top: 5%;
+
+}
+.menulink{
+    color: black;
+}
+
+.btncolor{
+    color:#000;
+}
+
+.box-title  a{
+    position: absolute;
+    left: 14px;
+}
+.big-textarea{
+    height: 250px!important;
+    width: 100%!important;
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd" id="WebAppFragment_ID" version="3.0">
+
+    <name>apjconfig</name>
+    <!-- Servlet configuration -->
+    <servlet>
+        <servlet-name>Deroulante</servlet-name>
+        <servlet-class>web.servlet.Deroulante</servlet-class>
+    </servlet>
+	<servlet>
+        <servlet-name>ServletDownload</servlet-name>
+        <servlet-class>web.servlet.ServletDownload</servlet-class>
+    </servlet>
+	<servlet>
+        <servlet-name>ImportUtilServlet</servlet-name>
+        <servlet-class>web.web.importController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Deroulante</servlet-name>
+        <url-pattern>/Deroulante</url-pattern>
+    </servlet-mapping>
+	
+	<servlet-mapping>
+        <servlet-name>ServletDownload</servlet-name>
+        <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+	
+	<servlet-mapping>
+        <servlet-name>ImportUtilServlet</servlet-name>
+        <url-pattern>/ImportUtilServlet</url-pattern>
+    </servlet-mapping>
+    <!-- Add more servlet configurations as needed -->
+
+</web-fragment>

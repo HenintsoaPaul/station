@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="encaissementPompiste" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c97ef027-922b-49d0-8fd1-c85cfcf34e3e">
+	<property name="ireport.zoom" value="1.6105100000000014"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\ASA\\gestion-station\\station-war\\web\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="nom" class="java.lang.String"/>
+	<parameter name="date" class="java.util.Date"/>
+	<parameter name="ecart" class="java.lang.Double"/>
+	<parameter name="versement" class="java.lang.Double"/>
+	<parameter name="espece" class="java.lang.Double"/>
+	<parameter name="om" class="java.lang.Double"/>
+	<queryString>
+		<![CDATA[select * from Prelevement_Pompiste]]>
+	</queryString>
+	<field name="prelevementPompiste" class="java.util.List"/>
+	<field name="cheque" class="java.util.List"/>
+	<field name="tpe" class="java.util.List"/>
+	<field name="carteVisa" class="java.util.List"/>
+	<field name="fanilo" class="java.util.List"/>
+	<field name="venteLub" class="java.util.List"/>
+	<field name="depense" class="java.util.List"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="2" width="192" height="20" forecolor="#003333" uuid="c488652b-5443-4af5-9aea-f4d9b7f6d055"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FICHE POMPISTE SS VOLOMBATO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="199" y="3" width="32" height="20" uuid="d80c8e40-4757-432b-9bee-6d2e62316d3b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[DATE :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="382" y="3" width="36" height="20" uuid="544d8d81-803e-40d7-9612-94c876887e29"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Nom :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="418" y="3" width="90" height="20" uuid="acf1a714-abc2-4e30-a222-c5fe1cf66f43"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{nom}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="231" y="3" width="44" height="20" uuid="e2817782-88d6-4d11-8ede-f76e22c80ecb"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="44" y="34" width="83" height="17" uuid="64606e03-0aa1-41cb-9962-940b3ad4848b"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{espece}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="77" y="53" width="100" height="18" uuid="5ad0eb8f-dc31-4ce7-a853-fa71204cc9a8"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{om}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="0" y="52" width="77" height="20" uuid="94aa8705-38cd-4535-bf42-064f12e40177"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Orange Money:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="1" y="35" width="40" height="17" uuid="471233ee-6037-4a6a-a92c-bdb8c8827c6b"/>
+				<textElement textAlignment="Left">
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Espèce:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<summary>
+		<band height="439" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="190" y="140" width="159" height="37" uuid="2952b718-e433-4414-867b-365b65ed4362"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{depense})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "depense.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="375" y="94" width="110" height="128" uuid="defaf2ba-15a7-4620-a465-959b6436dbf3"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{fanilo})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "tpe.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="1" y="138" width="43" height="37" uuid="d1eda2c0-08cc-40c5-8f53-bacef609680e"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{fanilo})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fanilo.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="91" width="53" height="37" uuid="8e2c268d-7129-498a-b279-172d0eafda4d"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{cheque})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cheque.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="36" width="431" height="39" uuid="4151dc88-385f-41ae-b3ae-1b75643d0315"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{venteLub})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "venteLub.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="431" height="36" uuid="d67110a4-cd34-4813-b702-a7282c202ea2"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{prelevementPompiste})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "detailsVente.jasper"]]></subreportExpression>
+			</subreport>
+			<elementGroup>
+				<subreport>
+					<reportElement positionType="Float" x="190" y="94" width="159" height="37" uuid="4c802a2d-dd4a-4062-a38a-3707eb242674"/>
+					<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{carteVisa})]]></dataSourceExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "carteVisa.jasper"]]></subreportExpression>
+				</subreport>
+			</elementGroup>
+			<staticText>
+				<reportElement positionType="Float" x="278" y="41" width="49" height="20" uuid="9d72e4ec-38bd-43c4-8828-3b578a13da45"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Total vrst :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="278" y="61" width="49" height="20" uuid="7bd44c9b-e065-4b40-9e99-6b5157f9a2f0"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Ecart :]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="327" y="61" width="104" height="20" uuid="be902729-e6ef-4ede-a86c-134151bcf0dd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{ecart}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="327" y="41" width="104" height="20" uuid="f46f8ec6-f0f5-4aa8-b56f-62316bcb7ea1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{versement}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

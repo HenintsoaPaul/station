@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="encaissement" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0f25e8c7-d6db-437e-9e9b-e3f0b5bd2d9e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="carburants" class="java.lang.String"/>
+	<parameter name="lubrifiants" class="java.lang.String"/>
+	<parameter name="totalrecette" class="java.lang.String"/>
+	<parameter name="depense" class="java.lang.String"/>
+	<parameter name="versement" class="java.lang.String"/>
+	<parameter name="montantecart" class="java.lang.String"/>
+	<field name="idCategorieCaisseLib" class="java.lang.String"/>
+	<field name="montant" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="57" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="200" height="20" forecolor="#003333" uuid="8bfc78f0-c693-4aec-9883-85b0b285c3d3"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Station VOLOMBATO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="20" width="555" height="20" forecolor="#333333" backcolor="#FFCC00" uuid="1808b79e-9f5e-4d7e-b853-f674fadc3119"/>
+				<box>
+					<topPen lineWidth="2.0"/>
+					<leftPen lineWidth="2.0"/>
+					<bottomPen lineWidth="2.0"/>
+					<rightPen lineWidth="2.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fiche récapitulation]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="123" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="459fd433-5084-4717-8cb5-d73774e247dd"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Journée du : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="72" width="147" height="20" forecolor="#0066CC" uuid="cdee9bca-25c2-442d-9ffa-7846cdcd0c7f"/>
+				<text><![CDATA[CHARGEMENT DIRECT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="92" width="119" height="25" uuid="6607a110-ae63-4e87-ad3d-4958e5dd716b"/>
+				<box>
+					<pen lineColor="#CC00CC"/>
+					<topPen lineWidth="0.5" lineColor="#CC00CC"/>
+					<leftPen lineWidth="0.5" lineColor="#CC00CC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CC00CC"/>
+					<rightPen lineWidth="0.5" lineColor="#CC00CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[TOTAL RECETTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="175" height="20" uuid="615e00e3-3ed3-4d84-9cf1-d9999ddd0aa5"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[CARBURANTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="175" height="20" uuid="231f4a38-9cac-4247-9ea2-1c5be3c63abc"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[LUBRIFIANTS]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="119" y="92" width="119" height="25" uuid="9e5822a9-d10e-4efe-b4b6-4192324cdad0"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#CC00CC"/>
+					<leftPen lineWidth="0.5" lineColor="#CC00CC"/>
+					<bottomPen lineWidth="0.5" lineColor="#CC00CC"/>
+					<rightPen lineWidth="0.5" lineColor="#CC00CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalrecette}+" Ar"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="175" y="20" width="175" height="20" uuid="c56cb9a0-6625-4b47-8d40-e873c6b57fe8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{carburants}+" Ar"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="175" y="40" width="175" height="20" uuid="402cfc74-75a9-422d-95c5-03439ef2d6c0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{lubrifiants}+" Ar"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="175" y="0" width="148" height="25" uuid="d2302a0f-29c9-459d-ad0b-36bb4132b4ca"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{montant}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="175" height="25" uuid="67fad437-d2d4-458b-ad05-e86a2ad7b53e"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{idCategorieCaisseLib}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="323" y="0" width="27" height="25" uuid="30733a58-5179-4a73-971a-f8ae4e445463"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Ar]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<summary>
+		<band height="104" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="175" y="0" width="175" height="25" uuid="bdd34364-083e-4b4a-8d35-7726d4391af9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{depense}+" Ar"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="175" height="25" uuid="edab6984-2292-4af8-8f31-8dcdff4ce796"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[DEPENSE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="37" width="175" height="20" forecolor="#333333" uuid="d2a5f0f2-994b-4647-88ed-53defbb6e3d5"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Moin ou surplus pompiste]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="57" width="119" height="25" uuid="2a169059-04a8-44cd-bfe6-5cbefa21ae5c"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#CC00FF"/>
+					<leftPen lineWidth="0.5" lineColor="#CC00FF"/>
+					<bottomPen lineWidth="0.5" lineColor="#CC00FF"/>
+					<rightPen lineWidth="0.5" lineColor="#CC00FF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[TOTAL RECETTE]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="119" y="57" width="126" height="25" uuid="cf26e078-4435-4efb-a012-49183afaafb2"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#CC00FF"/>
+					<leftPen lineWidth="0.5" lineColor="#CC00FF"/>
+					<bottomPen lineWidth="0.5" lineColor="#CC00FF"/>
+					<rightPen lineWidth="0.5" lineColor="#CC00FF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{versement}+" Ar"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="175" y="37" width="175" height="20" uuid="b01d33c6-3308-4927-8aef-309f70808e80"/>
+				<textElement textAlignment="Right">
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{montantecart}+" Ar"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
