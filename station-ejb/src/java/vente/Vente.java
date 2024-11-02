@@ -8,7 +8,6 @@ import avoir.AvoirFC;
 import avoir.AvoirFCFille;
 import bean.AdminGen;
 import bean.CGenUtil;
-import bean.ClassMere;
 import bean.ResultatEtSomme;
 
 import java.sql.Connection;
@@ -21,13 +20,10 @@ import constante.ConstanteEtat;
 import encaissement.Encaissement;
 import encaissement.EncaissementDetails;
 
-import java.sql.SQLException;
-
 import magasin.Magasin;
 import mg.cnaps.compta.ComptaEcriture;
 import mg.cnaps.compta.ComptaSousEcriture;
 import prevision.Prevision;
-import prevision.PrevisionComplet;
 import stock.MvtStock;
 import stock.MvtStockFille;
 import utilitaire.UtilDB;
@@ -39,7 +35,7 @@ import utils.ConstanteStation;
  * @author Angela
  */
 public class Vente extends FactureCF {
-    protected String designation;
+
     protected String idMagasin;
     protected String remarque;
     protected String idOrigine;
@@ -56,7 +52,7 @@ public class Vente extends FactureCF {
     }
 
     public void Vente() {
-        this.setNomTable( "vente" );
+        this.setNomTable( "VENTE" );
     }
 
     @Override
@@ -87,25 +83,58 @@ public class Vente extends FactureCF {
         return ( Vente ) new Vente().getById( this.getId(), "VENTE_CPL", c );
     }
 
+    /**
+     * Prendre dans la base de donnees la liste des venteDetails qui ne sont pas
+     * encore paye en totalite a l'aide de la view {@code VENTE_DETAILS_RESTE}.
+     * On va ensuite creer un {@code As_BondeLivraisonClient} qui va avoir plusieurs
+     * filles. Chaque fille est liee a une venteDetails.
+     * On createObject() la mere, puis chaque fille.
+     *
+     * @return L'id du {@code As_BondeLivraisonClient} que l'on vient d'inserer.
+     */
     public String genererBonLivraison( String u )
             throws Exception {
-        Connection c = null;
+        Connection conn = null;
         try {
-            c = new UtilDB().GetConn();
-            c.setAutoCommit( false );
-            Vente enBase = ( Vente ) this.getById( this.getId(), this.getNomTable(), c );
-            VenteDetailsLib vLib = new VenteDetailsLib();
-            vLib.setNomTable( "VENTE_DETAILS_RESTE" );
-            VenteDetailsLib[] details = ( VenteDetailsLib[] ) CGenUtil.rechercher( vLib, null, null, c, " AND idVente='" + this.getId() + "' AND reste > 0" );
+            conn = new UtilDB().GetConn();
+            return genererBonLivraison( u, conn ).getId();
+        } catch ( Exception e ) {
+            if ( conn != null ) conn.rollback();
+            throw e;
+        } finally {
+            if ( conn != null ) conn.close();
+        }
+    }
+
+    /**
+     * Prendre dans la base de donnees la liste des venteDetails qui ne sont pas
+     * encore paye en totalite a l'aide de la view {@code VENTE_DETAILS_RESTE}.
+     * On va ensuite creer un {@code As_BondeLivraisonClient} qui va avoir plusieurs
+     * filles. Chaque fille est liee a une venteDetails.
+     * On createObject() la mere, puis on createObject() chaque fille.
+     *
+     * @return L'id du {@code As_BondeLivraisonClient} que l'on vient d'inserer.
+     */
+    public As_BondeLivraisonClient genererBonLivraison( String u, Connection conn )
+            throws Exception {
+        try {
+            conn.setAutoCommit( false );
+
+            VenteDetailsLib vLib = new VenteDetailsLib( "VENTE_DETAILS_RESTE" );
+            String apresWhere = " AND idVente='" + this.getId() + "' AND reste > 0";
+            VenteDetailsLib[] details = ( VenteDetailsLib[] ) CGenUtil.rechercher( vLib, null, null, conn, apresWhere );
+
             if ( details.length > 0 ) {
-                As_BondeLivraisonClient client = new As_BondeLivraisonClient();
-                client.setMode( "modif" );
-                client.setIdvente( this.getId() );
-                client.setEtat( 1 );
-                client.setIdclient( enBase.getIdClient() );
-                client.setRemarque( "Livraison de la facture numero " + this.getId() );
-                client.setDaty( Utilitaire.dateDuJourSql() );
-                client.createObject( u, c );
+                As_BondeLivraisonClient BLClient = new As_BondeLivraisonClient();
+                BLClient.setMode( "modif" );
+                BLClient.setIdvente( this.getId() );
+                BLClient.setEtat( 1 );
+                BLClient.setIdclient( this.getIdClient() );
+                BLClient.setMagasin( this.getIdMagasin() );
+                BLClient.setRemarque( "Livraison de la facture de vente No: " + this.getId() );
+                BLClient.setDaty( Utilitaire.dateDuJourSql() );
+                BLClient.createObject( u, conn );
+
                 for ( VenteDetailsLib detail : details ) {
                     As_BondeLivraisonClientFille clientFille = new As_BondeLivraisonClientFille();
                     clientFille.setMode( "modif" );
@@ -113,25 +142,24 @@ public class Vente extends FactureCF {
                     clientFille.setUnite( detail.getIdUnite() );
                     clientFille.setQuantite( detail.getReste() );
                     clientFille.setIdventedetail( detail.getId() );
-                    clientFille.setNumbl( client.getId() );
-                    clientFille.createObject( u, c );
+                    clientFille.setNumbl( BLClient.getId() );
+                    clientFille.createObject( u, conn );
                 }
-                c.commit();
-                return client.getId();
+
+                conn.commit();
+                return BLClient;
             }
             throw new Exception( "Plus aucun article à livrer" );
         } catch ( Exception e ) {
-            if ( c != null ) c.rollback();
+            if ( conn != null ) conn.rollback();
+            e.printStackTrace();
             throw e;
-        } finally {
-            if ( c != null ) c.close();
         }
     }
 
     public String getCompte() {
         return compte;
     }
-
 
     public void setCompte( String compte ) {
         this.compte = compte;
@@ -166,7 +194,6 @@ public class Vente extends FactureCF {
         this.estPrevu = estPrevu;
     }
 
-
     public String getIdMagasin() {
         return idMagasin;
     }
@@ -175,21 +202,13 @@ public class Vente extends FactureCF {
         this.idMagasin = idMagasin;
     }
 
-
     public boolean isPaye() {
-        if ( this.getEtat() == ConstanteEtatCustom.PAYE_LIVRE || this.getEtat() == ConstanteEtatCustom.PAYE_NON_LIVRE ) {
-            return true;
-        }
-        return false;
+        return this.getEtat() == ConstanteEtatCustom.PAYE_LIVRE || this.getEtat() == ConstanteEtatCustom.PAYE_NON_LIVRE;
     }
 
     public boolean isLivre() {
-        if ( this.getEtat() == ConstanteEtatCustom.LIVRE_NON_PAYE || this.getEtat() == ConstanteEtatCustom.PAYE_LIVRE ) {
-            return true;
-        }
-        return false;
+        return this.getEtat() == ConstanteEtatCustom.LIVRE_NON_PAYE || this.getEtat() == ConstanteEtatCustom.PAYE_LIVRE;
     }
-
 
     public String getClientlib() {
         return clientlib;
@@ -225,18 +244,14 @@ public class Vente extends FactureCF {
         if ( this.getEtat() < ConstanteEtat.getEtatValider() ) {
             throw new Exception( "Impossible de livrer une vente non validée" );
         }
-        if ( isPaye() ) {
-            this.updateEtat( ConstanteEtatCustom.PAYE_LIVRE, this.getId(), c );
-        } else {
-            this.updateEtat( ConstanteEtatCustom.LIVRE_NON_PAYE, this.getId(), c );
-        }
+        String idVente = this.getId();
+        if ( isPaye() ) this.updateEtat( ConstanteEtatCustom.PAYE_LIVRE, idVente, c );
+        else this.updateEtat( ConstanteEtatCustom.LIVRE_NON_PAYE, idVente, c );
     }
 
     public void lierLivraisons( String u, String[] idLivraison )
             throws Exception {
-        Connection c = null;
-        try {
-            c = new UtilDB().GetConn();
+        try ( Connection c = new UtilDB().GetConn() ) {
             VenteDetails[] venteDetails = getVenteDetails( c );
             As_BondeLivraisonClient[] blcs = As_BondeLivraisonClient.getAll( idLivraison, c );
             As_BondeLivraisonClient.controlerClient( blcs );
@@ -252,13 +267,6 @@ public class Vente extends FactureCF {
                         }
                     }
                 }
-            }
-
-        } catch ( Exception e ) {
-            throw e;
-        } finally {
-            if ( c != null ) {
-                c.close();
             }
         }
     }
@@ -346,7 +354,6 @@ public class Vente extends FactureCF {
     public void controlerUpdate( Connection c )
             throws Exception {
         super.controlerUpdate( c );
-
     }
 
     public void createMvtCaisses( String u, Connection c )
@@ -354,8 +361,8 @@ public class Vente extends FactureCF {
         VenteDetailsCpl vdc = new VenteDetailsCpl();
         vdc.setIdVente( this.getId() );
         VenteDetailsCpl[] vdcs = ( VenteDetailsCpl[] ) CGenUtil.rechercher( vdc, null, null, c, " " );
-        for ( int i = 0; i < vdcs.length; i++ ) {
-            MvtCaisse mc = vdcs[ i ].createMvtCaisse();
+        for ( VenteDetailsCpl detailsCpl : vdcs ) {
+            MvtCaisse mc = detailsCpl.createMvtCaisse();
             mc.createObject( u, c );
         }
     }
@@ -388,11 +395,13 @@ public class Vente extends FactureCF {
         super.payerObject( u, con );
         Encaissement enc = this.genererEncaissement();
         enc = ( Encaissement ) enc.createObject( u, con );
+
         EncaissementDetails[] ed = generateDetailsEncaissements( con );
-        for ( int i = 0; i < ed.length; i++ ) {
-            ed[ i ].setIdEncaissement( enc.getId() );
-            ed[ i ].createObject( u, con );
+        for ( EncaissementDetails details : ed ) {
+            details.setIdEncaissement( enc.getId() );
+            details.createObject( u, con );
         }
+
         return enc;
     }
 
@@ -411,7 +420,8 @@ public class Vente extends FactureCF {
             throws Exception {
         MvtStock md = new MvtStock();
         md.setDaty( this.getDaty() );
-        md.setDesignation( "Vente lubrifiant : " + this.getDesignation() );
+//        md.setDesignation( "Vente lubrifiant : " + this.getDesignation() );
+        md.setDesignation( "Vente : " + this.getDesignation() );
         md.setIdTransfert( this.getId() );
         md.setIdTypeMvStock( ConstanteStation.TYPEMVTSTOCKSORTIE );
         md.setIdMagasin( this.getIdMagasin() );
@@ -435,28 +445,24 @@ public class Vente extends FactureCF {
         try {
             if ( c == null ) {
                 estOuvert = true;
-                c = new UtilDB().GetConn();
+                c = new UtilDB().GetConn( "gallois", "gallois" );
                 c.setAutoCommit( false );
             }
             //CheckEtatStockVenteDetails(c);
             super.validerObject( u, c );
             genererEcriture( u, c );
             //createMvtStockSortie(u, c);
-//            if(this.getEstPrevu() == 0||this.getDatyPrevu()!=null){
-//                genererPrevision(u, c);
-//            }
+            if ( this.getEstPrevu() == 0 || this.getDatyPrevu() != null ) {
+                genererPrevision( u, c );
+            }
             return this;
 
         } catch ( Exception e ) {
-            if ( c != null ) {
-                c.rollback();
-            }
+            if ( c != null ) c.rollback();
             e.printStackTrace();
             throw e;
         } finally {
-            if ( c != null && estOuvert == true ) {
-                c.close();
-            }
+            if ( c != null && estOuvert ) c.close();
         }
     }
 
@@ -468,7 +474,6 @@ public class Vente extends FactureCF {
                 v.CheckEtatStock( c );
             }
         }
-
     }
 
     public void genererEcritureEncaissement( String u, Connection c )
@@ -497,7 +502,7 @@ public class Vente extends FactureCF {
 
     public ComptaSousEcriture[] genererSousEcritureEncaissement( String refUser, Connection c )
             throws Exception {
-        ComptaSousEcriture[] compta = {};
+        ComptaSousEcriture[] compta;
         boolean canClose = false;
         try {
             if ( c == null ) {
@@ -531,38 +536,36 @@ public class Vente extends FactureCF {
 //            compta[i].setDebit((montantHT-retenue) * ((this.getTva()/100)));
             compta[ 1 ].setCredit( ventes[ 0 ].getMontantttc() );
 
-        } catch ( Exception e ) {
-            throw e;
         } finally {
-            if ( canClose ) {
-                c.close();
-            }
+            if ( canClose ) c.close();
         }
         return compta;
     }
 
     public void genererEcriture( String u, Connection c )
             throws Exception {
-        ComptaEcriture mere = new ComptaEcriture();
         Date dateDuJour = utilitaire.Utilitaire.dateDuJourSql();
+        Date daty = this.getDaty();
         int exercice = utilitaire.Utilitaire.getAnnee( daty );
+
+        ComptaEcriture mere = new ComptaEcriture();
         mere.setDaty( dateDuJour );
         mere.setDesignation( this.getDesignation() );
         mere.setExercice( "" + exercice );
-        mere.setDateComptable( this.getDaty() );
+        mere.setDateComptable( daty );
         mere.setJournal( ConstanteStation.JOURNALVENTE );
         mere.setOrigine( this.getId() );
         mere.setIdobjet( this.getId() );
         mere.createObject( u, c );
 
         ComptaSousEcriture[] filles = this.genererSousEcriture( c );
-        for ( int i = 0; i < filles.length; i++ ) {
-            filles[ i ].setIdMere( mere.getId() );
-            filles[ i ].setExercice( exercice );
-            filles[ i ].setDaty( this.getDaty() );
-            filles[ i ].setJournal( ConstanteStation.JOURNALVENTE );
+        for ( ComptaSousEcriture fille : filles ) {
+            fille.setIdMere( mere.getId() );
+            fille.setExercice( exercice );
+            fille.setDaty( daty );
+            fille.setJournal( ConstanteStation.JOURNALVENTE );
 
-            if ( filles[ i ].getDebit() > 0 || filles[ i ].getCredit() > 0 ) filles[ i ].createObject( u, c );
+            if ( fille.getDebit() > 0 || fille.getCredit() > 0 ) fille.createObject( u, c );
         }
     }
 
@@ -578,24 +581,28 @@ public class Vente extends FactureCF {
 
     public ComptaSousEcriture[] genererSousEcriture( Connection c )
             throws Exception {
-        ComptaSousEcriture[] compta = {};
+        ComptaSousEcriture[] compta;
         boolean canClose = false;
         try {
             if ( c == null ) {
                 c = new UtilDB().GetConn();
                 canClose = true;
             }
-            Vente[] ventes = ( Vente[] ) CGenUtil.rechercher( new Vente( "VENTE_MERE_MONTANT" ), null, null, c, " and id = '" + this.getId() + "'" );
+            Vente vTemp = new Vente( "VENTE_MERE_MONTANT" );
+            Vente[] ventes = ( Vente[] ) CGenUtil.rechercher( vTemp, null, null, c, " and id = '" + this.getId() + "'" );
+
             if ( ventes.length < 1 ) throw new Exception( "Facture mere Introuvable" );
             this.setCompte( getClient( c ).getCompte() );
             VenteDetails[] details = this.getDetails( c );
-            double montantHT = AdminGen.calculSommeDouble( details, "montantHT" ) * details[ 0 ].getTauxDeChange();
-            double montantTva = AdminGen.calculSommeDouble( details, "montantTva" ) * details[ 0 ].getTauxDeChange();
-            double montantTTC = AdminGen.calculSommeDouble( details, "montantTTC" ) * details[ 0 ].getTauxDeChange();
+
+            double tauxChange = details[ 0 ].getTauxDeChange(),
+                    montantTva = AdminGen.calculSommeDouble( details, "montantTva" ) * tauxChange,
+                    montantTTC = AdminGen.calculSommeDouble( details, "montantTTC" ) * tauxChange;
+
             int taille = details.length;
             compta = new ComptaSousEcriture[ taille + 2 ];
             int i = 0;
-            for ( i = i; i < taille; i++ ) {
+            for ( ; i < taille; i++ ) {
                 compta[ i ] = new ComptaSousEcriture();
                 compta[ i ].setLibellePiece( this.getDesignation() );
                 compta[ i ].setRemarque( details[ i ].getLibelle() );
@@ -607,7 +614,6 @@ public class Vente extends FactureCF {
             compta[ i ].setLibellePiece( "TVA Collectee" );
             compta[ i ].setRemarque( "TVA Collectee" );
             compta[ i ].setCompte( ConstanteStation.compteTVACollecte );
-//            compta[i].setDebit((montantHT-retenue) * ((this.getTva()/100)));
             compta[ i ].setCredit( montantTva );
             i++;
 
@@ -616,12 +622,8 @@ public class Vente extends FactureCF {
             compta[ i ].setRemarque( "Vente Client " + ventes[ 0 ].getClientlib() );
             compta[ i ].setCompte( this.getCompte() );
             compta[ i ].setDebit( montantTTC );
-        } catch ( Exception e ) {
-            throw e;
         } finally {
-            if ( canClose ) {
-                c.close();
-            }
+            if ( canClose ) c.close();
         }
         return compta;
     }
@@ -629,14 +631,9 @@ public class Vente extends FactureCF {
 
     public VenteDetails[] getDetails( Connection c )
             throws Exception {
-        VenteDetails[] venteDetails = null;
-        try {
-            String awhere = " and IDVENTE = '" + this.getId() + "'";
-            venteDetails = ( VenteDetails[] ) CGenUtil.rechercher( new VenteDetails( "VENTE_GRP_VISER" ), null, null, c, awhere );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            throw e;
-        }
+        VenteDetails[] venteDetails;
+        String awhere = " and IDVENTE = '" + this.getId() + "'";
+        venteDetails = ( VenteDetails[] ) CGenUtil.rechercher( new VenteDetails( "VENTE_GRP_VISER" ), null, null, c, awhere );
         return venteDetails;
     }
 
@@ -682,18 +679,14 @@ public class Vente extends FactureCF {
                 vd.setIdDevise( "AR" );
                 vd.createObject( u, c );
             }
-        } catch ( Exception e ) {
-            throw e;
         } finally {
-            if ( canClose ) {
-                c.close();
-            }
+            if ( canClose ) c.close();
         }
     }
 
     public static AvoirFC genererAvoir( String u, Connection c, String idVente )
-            throws SQLException, Exception {
-        AvoirFC avoirFC = null;
+            throws Exception {
+        AvoirFC avoirFC;
         boolean estOuvert = false;
         if ( c == null ) {
             c = new UtilDB().GetConn();
@@ -761,23 +754,23 @@ public class Vente extends FactureCF {
 
     public static Vente getById( Connection c, String id )
             throws Exception {
-        Vente vtn = new Vente();
         try {
+            Vente vtn = new Vente();
             vtn.setId( id );
-            vtn = ( ( Vente[] ) CGenUtil.rechercher( vtn, null, null, c, "" ) ).length > 0 ? ( Vente ) ( ( Vente[] ) CGenUtil.rechercher( vtn, null, null, c, "" ) )[ 0 ] : null;
+            Vente[] arr = ( Vente[] ) CGenUtil.rechercher( vtn, null, null, c, "" );
+            return arr.length > 0 ? arr[ 0 ] : null;
         } catch ( Exception e ) {
             e.printStackTrace();
             throw e;
         }
-        return vtn;
     }
 
     public VenteDetails[] getVenteDetailsNonGrp( Connection c )
             throws Exception {
-        VenteDetails[] venteDetails = null;
+        VenteDetails[] venteDetails;
         try {
-            String awhere = " and IDVENTE = '" + this.getId() + "'";
-            venteDetails = ( VenteDetails[] ) CGenUtil.rechercher( new VenteDetails(), null, null, c, awhere );
+            String apresWhere = " and IDVENTE = '" + this.getId() + "'";
+            venteDetails = ( VenteDetails[] ) CGenUtil.rechercher( new VenteDetails(), null, null, c, apresWhere );
             this.setVenteDetails( venteDetails );
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -788,7 +781,7 @@ public class Vente extends FactureCF {
 
     public Prevision[] getPrevisions( Connection c )
             throws Exception {
-        Boolean estOuvert = false;
+        boolean estOuvert = false;
         try {
             if ( c == null ) {
                 c = new UtilDB().GetConn();
@@ -796,18 +789,60 @@ public class Vente extends FactureCF {
             }
             Prevision prevision = new Prevision();
             prevision.setIdFacture( this.getId() );
-            Prevision[] prev = ( Prevision[] ) CGenUtil.rechercher( prevision, null, null, c, " " );
-            return prev;
-        } catch ( Exception e ) {
-            throw e;
+            return ( Prevision[] ) CGenUtil.rechercher( prevision, null, null, c, " " );
         } finally {
             if ( estOuvert ) c.close();
         }
     }
 
-    public Vente getByIdOrigine( String idPrelevement, Connection connection )
+    public VenteDetails[] getVenteDetailsFilles( Connection conn )
             throws Exception {
-        return ( ( Vente[] ) CGenUtil.rechercher( new Vente(), null, null, connection, " and idOrigine='" + idPrelevement + "'" ) )[ 0 ];
+        VenteDetails vd = new VenteDetails();
+        vd.setIdVente( this.getId() );
+        VenteDetails[] arr = ( VenteDetails[] ) CGenUtil.rechercher( vd, null, null, conn, "" );
+        return arr.length == 0 ? null : arr;
     }
 
+    public double getMontantHT( Connection conn )
+            throws Exception {
+        VenteDetails[] arrVd = this.getVenteDetailsFilles( conn );
+        double sum = 0;
+        for ( VenteDetails vd : arrVd ) sum += vd.getMontantTotal();
+        return sum;
+    }
+
+    public double getMontantTTC( Connection conn )
+            throws Exception {
+        double montantHT = getMontantHT( conn ),
+                tva = ConstanteStation.TVA_VALUE,
+                montantTVA = montantHT * ( tva / 100 );
+        return montantTVA + montantHT;
+    }
+
+    public boolean isACredit( Connection conn )
+            throws Exception {
+        MvtCaisse temp = new MvtCaisse();
+        temp.setIdOrigine( this.getId() );
+        MvtCaisse[] arrMvtCaisse = ( MvtCaisse[] ) CGenUtil.rechercher( temp, null, null, conn, "" );
+        return arrMvtCaisse.length == 0;
+    }
+
+    public static Vente getById( String idVente, Connection conn )
+            throws Exception {
+        Vente v = new Vente();
+        v.setId( idVente );
+        Vente[] arr = ( Vente[] ) CGenUtil.rechercher( v, null, null, conn, "" );
+        return arr.length > 0 ? arr[ 0 ] : null;
+    }
+
+    /**
+     * Invoke {@code vente.createObjectMultiple()}, then {@code vente.validerObject()}
+     */
+    public void insertEtValidation( String refUser, Connection conn )
+            throws Exception {
+        this.createObjectMultiple( refUser, conn );
+        System.out.println( "Create vente + venteDetails\n" );
+        this.validerObject( refUser, conn );
+        System.out.println( "Validation Vente + Details\n" );
+    }
 }
