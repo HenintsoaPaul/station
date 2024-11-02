@@ -1,7 +1,5 @@
 package client;
 
-import utilisateurstation.UtilisateurStation;
-
 import javax.ejb.Remote;
 
 @Remote

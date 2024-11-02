@@ -13,8 +13,6 @@ import historique.ParamCrypt;
 import historique.ParamCryptUtil;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 
 import mg.cnaps.utilisateur.CNAPSUser;
@@ -59,7 +57,7 @@ public class UtilisateurStation extends Utilisateur {
             }
 
             int niveau = 4;
-            String passCrypt = null;
+            String passCrypt;
             passCrypt = Utilitaire.cryptWord( this.getPwduser().toLowerCase(), niveau, false );
             MapUtilisateur newUser = new MapUtilisateur( this.getLoginuser(), passCrypt, this.getNomuser(), "DIR42", this.getTeluser(), this.getIdRole() );
             newUser.insertToTableWithHisto( u, c );

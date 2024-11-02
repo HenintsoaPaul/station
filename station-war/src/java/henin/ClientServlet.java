@@ -13,7 +13,7 @@ import java.io.IOException;
 @WebServlet( urlPatterns = "client" )
 public class ClientServlet extends HeninServlet {
 
-    private IClientEJB clientEJB;
+    private final IClientEJB clientEJB;
 
     public ClientServlet()
             throws NamingException {
