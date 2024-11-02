@@ -124,9 +124,10 @@
     <target name="deploy" depends="copieProperties">
         <echo>${env.JBOSS_HOME}</echo>
 
-        <copy todir="./../../galana/build-file/lib">
-            <fileset file="${buildEar.dir}/${station-jarname}"/>
-        </copy>
+        <!-- Envoyer une copie vers galana -->
+<!--        <copy todir="./../../galana/build-file/lib">-->
+<!--            <fileset file="${buildEar.dir}/${station-jarname}"></fileset>-->
+<!--        </copy>-->
 
         <copy todir="${deploy.dir}/station.war">
             <fileset dir="${build-station-war_war}">
