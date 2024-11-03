@@ -20,8 +20,6 @@ public interface ILubrifiantEJB {
     void reglerVente( Vente vente )
             throws SQLException;
 
-    void reglerPrelevement( Prelevement prelevement );
-
     EtatStock[] getEtatStock()
             throws Exception;
 }

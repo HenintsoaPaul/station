@@ -33,7 +33,7 @@ public class PrelevementServlet extends LubrifiantServlet {
             System.out.println( myPrelevementLub.toString() );
 
             super.dataOk( resp );
-            boolean isVente = prelevementLubEJB.reglerPrelevementLub( myPrelevementLub );
+            prelevementLubEJB.reglerPrelevementLub( myPrelevementLub );
         } catch ( Exception e ) {
             resp.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
             resp.getWriter().write( this.gson.toJson( new JsonError( "Erreur interne: " + e.getMessage() ) ) );

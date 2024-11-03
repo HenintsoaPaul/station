@@ -94,11 +94,6 @@ public class LubrifiantEJB implements ILubrifiantEJB {
     }
 
     @Override
-    public void reglerPrelevement( Prelevement prelevement ) {
-        // todo:
-    }
-
-    @Override
     public EtatStock[] getEtatStock()
             throws Exception {
         EtatStock es = new EtatStock();
