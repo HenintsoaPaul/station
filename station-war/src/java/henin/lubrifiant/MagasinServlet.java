@@ -1,5 +1,7 @@
 package henin.lubrifiant;
 
+import magasin.IMagasinEJB;
+import utils.EJBGetter;
 import utils.json.JsonError;
 
 import javax.naming.NamingException;
@@ -11,9 +13,12 @@ import java.io.IOException;
 @WebServlet( urlPatterns = "lubrifiant/magasin" )
 public class MagasinServlet extends LubrifiantServlet {
 
+    private final IMagasinEJB magasinEJB;
+
     public MagasinServlet()
             throws NamingException {
         super();
+        magasinEJB = EJBGetter.getMagasinEJB();
     }
 
     @Override
@@ -22,7 +27,17 @@ public class MagasinServlet extends LubrifiantServlet {
         try {
             resp.setContentType( "application/json" );
             super.setCORS( resp );
-            Object[] arr = this.getLubrifiantEJB().getAllBoutik();
+
+            Object[] arr = null;
+            String action = req.getParameter( "action" );
+            if ( action == null ) {
+                arr = this.magasinEJB.getAll();
+            } else if ( action.equalsIgnoreCase( "cuve" ) ) {
+                arr = this.magasinEJB.getAllCuve();
+            } else if ( action.equalsIgnoreCase( "lub" ) ) {
+                arr = this.magasinEJB.getAllMagasinLub();
+            }
+
             resp.getWriter().println( this.gson.toJson( arr ) );
         } catch ( Exception e ) {
             resp.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
