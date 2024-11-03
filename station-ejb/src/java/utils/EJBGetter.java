@@ -1,7 +1,10 @@
 package utils;
 
 //import boutik.IBoutikEJB;
+import annexe.produit.IProduitEJB;
 import client.IClientEJB;
+import magasin.IMagasinEJB;
+import prelevementLub.IPrelevementLubEJB;
 import utilisateurstation.IUtilisateurEJB;
 import venteLubrifiant.ILubrifiantEJB;
 
@@ -26,6 +29,13 @@ public class EJBGetter {
         return ( ILubrifiantEJB ) ctx.lookup( jndi );
     }
 
+    public static IPrelevementLubEJB getPrelevementLubEJB()
+            throws NamingException {
+        Context ctx = new InitialContext();
+        String jndi = "java:global/station/PrelevementLubEJB!prelevementLub.IPrelevementLubEJB";
+        return ( IPrelevementLubEJB ) ctx.lookup( jndi );
+    }
+
     public static IUtilisateurEJB getUtilisateurEJB()
             throws NamingException {
         Context ctx = new InitialContext();
@@ -38,6 +48,20 @@ public class EJBGetter {
         Context ctx = new InitialContext();
         String jndi = "java:global/station/ClientEJB!client.IClientEJB";
         return ( IClientEJB ) ctx.lookup( jndi );
+    }
+
+    public static IMagasinEJB getMagasinEJB()
+            throws NamingException {
+        Context ctx = new InitialContext();
+        String jndi = "java:global/station/MagasinEJB!magasin.IMagasinEJB";
+        return ( IMagasinEJB ) ctx.lookup( jndi );
+    }
+
+    public static IProduitEJB getProduitEJB()
+            throws NamingException {
+        Context ctx = new InitialContext();
+        String jndi = "java:global/station/ProduitEJB!annexe.produit.IProduitEJB";
+        return ( IProduitEJB ) ctx.lookup( jndi );
     }
 
     //    Galana

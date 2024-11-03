@@ -1,4 +1,6 @@
 -- Data Mobile
+insert into COMPTA_COMPTE (ID, COMPTE, LIBELLE, TYPECOMPTE, CLASSY, IDJOURNAL)
+values ('COC00M712001', '712001', 'VENTE LUBRIFIANT', '1', '7', 'COMP000039');
 
 -- Data boutik
 insert into GALLOIS.TYPEMAGASIN (ID, VAL, DESCE)
@@ -80,4 +82,4 @@ select m.*
 from PRODUIT p
          join magasin m
               on m.IDPRODUIT = p.ID
-where p.IDTYPEPRODUIT = 'TP00004'
+where p.IDTYPEPRODUIT = 'TP00004';

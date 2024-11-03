@@ -2,7 +2,6 @@ package venteLubrifiant;
 
 import annexe.Produit;
 import magasin.Magasin;
-import prelevement.Prelevement;
 import stock.EtatStock;
 import vente.Vente;
 
@@ -19,8 +18,6 @@ public interface ILubrifiantEJB {
 
     void reglerVente( Vente vente )
             throws SQLException;
-
-    void reglerPrelevement( Prelevement prelevement );
 
     EtatStock[] getEtatStock()
             throws Exception;

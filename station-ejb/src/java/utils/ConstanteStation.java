@@ -66,6 +66,7 @@ public class ConstanteStation {
     public static String TypeBoutik = "TP00003";
     public static String TypeMagasinBoutik = "TYPMG000003";
     public static String comptaCompteMarchandise = "712000";
+    public static String comptaCompteVenteLubrifiant = "712001";
     public static int TVA_VALUE = 20;
 
     //    LUBRIFIANT

@@ -1,6 +1,6 @@
-package henin.lubrifiant;
+package henin;
 
-import magasin.IMagasinEJB;
+import utilisateurstation.IUtilisateurEJB;
 import utils.EJBGetter;
 import utils.json.JsonError;
 
@@ -10,15 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet( urlPatterns = "lubrifiant/magasin" )
-public class MagasinServlet extends LubrifiantServlet {
+@WebServlet( urlPatterns = "utilisateur" )
+public class UtilisateurServlet extends HeninServlet {
 
-    private final IMagasinEJB magasinEJB;
+    private final IUtilisateurEJB utilisateurEJB;
 
-    public MagasinServlet()
+    public UtilisateurServlet()
             throws NamingException {
         super();
-        magasinEJB = EJBGetter.getMagasinEJB();
+        this.utilisateurEJB = EJBGetter.getUtilisateurEJB();
     }
 
     @Override
@@ -31,17 +31,16 @@ public class MagasinServlet extends LubrifiantServlet {
             Object[] arr = null;
             String action = req.getParameter( "action" );
             if ( action == null ) {
-                arr = this.magasinEJB.getAll();
-            } else if ( action.equalsIgnoreCase( "cuve" ) ) {
-                arr = this.magasinEJB.getAllCuve();
-            } else if ( action.equalsIgnoreCase( "lub" ) ) {
-                arr = this.magasinEJB.getAllMagasinLub();
+                arr = this.utilisateurEJB.getAll();
+            } else if ( action.equalsIgnoreCase( "pompiste" ) ) {
+                arr = this.utilisateurEJB.getAllPompiste();
             }
 
             resp.getWriter().println( this.gson.toJson( arr ) );
         } catch ( Exception e ) {
             resp.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
             resp.getWriter().write( this.gson.toJson( new JsonError( "Erreur interne" ) ) );
+            throw new RuntimeException( e );
         }
     }
 }

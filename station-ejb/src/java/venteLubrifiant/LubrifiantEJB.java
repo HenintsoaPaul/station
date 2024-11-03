@@ -4,7 +4,6 @@ import annexe.Produit;
 import bean.CGenUtil;
 import caisse.MvtCaisse;
 import magasin.Magasin;
-import prelevement.Prelevement;
 import stock.EtatStock;
 import stock.MvtStock;
 import utilitaire.UtilDB;
@@ -91,11 +90,6 @@ public class LubrifiantEJB implements ILubrifiantEJB {
         } finally {
             if ( connGallois != null ) connGallois.close();
         }
-    }
-
-    @Override
-    public void reglerPrelevement( Prelevement prelevement ) {
-        // todo:
     }
 
     @Override

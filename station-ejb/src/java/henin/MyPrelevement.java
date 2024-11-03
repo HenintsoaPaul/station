@@ -1,6 +1,7 @@
 package henin;
 
 import annexe.Produit;
+import magasin.Magasin;
 import utils.ConstanteStation;
 import utils.DateUtil;
 import utils.EJBGetter;
@@ -9,9 +10,9 @@ import vente.VenteDetails;
 
 import java.io.Serializable;
 
-public class MyVente implements Serializable {
+public class MyPrelevement implements Serializable {
 
-    String IdProduit, IdClient, IdMagasin;
+    String IdPompiste, IdMagasin;
     String Daty;
     int Quantite;
 
@@ -20,8 +21,7 @@ public class MyVente implements Serializable {
         return "MyVente{" +
                 "Daty='" + this.getDaty() + '\'' +
                 ", IdMagasin='" + this.getIdMagasin() + '\'' +
-                ", IdClient='" + this.getIdClient() + '\'' +
-                ", IdProduit='" + this.getIdProduit() + '\'' +
+                ", IdPompiste='" + this.getIdPompiste() + '\'' +
                 ", Quantite=" + this.getQuantite() +
                 '}';
     }
@@ -33,37 +33,37 @@ public class MyVente implements Serializable {
         vente.setDaty( DateUtil.strToDate( this.getDaty() ) );
         vente.setEstPrevu( 1 ); // La vente n'est pas prevue mais doit etre reglee maintenant
         vente.setIdMagasin( this.getIdMagasin() );
-        vente.setIdClient( this.getIdClient() );
+        vente.setIdClient( ConstanteStation.idClientDivers );
 
         return vente;
     }
 
-    protected VenteDetails creerVenteDetails( Vente vente )
+    protected VenteDetails creerVenteDetails( Vente vente, int quantiteVendu )
             throws Exception {
-        String idProduit = this.getIdProduit();
-        Produit produit = EJBGetter.getProduitEJB().getById( idProduit );
+        Magasin magasin = EJBGetter.getMagasinEJB().getById( vente.getIdMagasin() );
+        Produit produit = EJBGetter.getProduitEJB().getById( magasin.getIdProduit() );
 
         VenteDetails vd = new VenteDetails();
-        vd.setIdProduit( idProduit );
+        vd.setIdProduit( produit.getId() );
         vd.setPu( produit.getPuVente() );
-        vd.setQte( this.getQuantite() );
         vd.setIdVente( vente.getId() );
         vd.setTauxDeChange( 1 );
-        vd.setCompte( ConstanteStation.comptaCompteMarchandise );
+        vd.setCompte( ConstanteStation.comptaCompteVenteLubrifiant );
         vd.setIdDevise( "AR" );
         vd.setPuAchat( produit.getPuAchat() );
         vd.setPuVente( produit.getPuVente() );
         vd.setTva( ConstanteStation.TVA_VALUE );
 
+        vd.setQte( quantiteVendu );
         return vd;
     }
 
     /**
      * Ajouter le {@code VenteDetails} pour l'objet {@code vente}
      */
-    protected void addDetails( Vente vente )
+    protected void addDetails( Vente vente, int quantiteVendu )
             throws Exception {
-        VenteDetails vd = this.creerVenteDetails( vente );
+        VenteDetails vd = this.creerVenteDetails( vente, quantiteVendu );
 
         VenteDetails[] arrVDetails = new VenteDetails[]{ vd };
         vente.setVenteDetails( arrVDetails );
@@ -72,20 +72,12 @@ public class MyVente implements Serializable {
     }
 
     // Getter n Setter
-    protected String getIdProduit() {
-        return IdProduit;
+    protected String getIdPompiste() {
+        return IdPompiste;
     }
 
-    protected void setIdProduit( String idProduit ) {
-        IdProduit = idProduit;
-    }
-
-    protected String getIdClient() {
-        return IdClient;
-    }
-
-    protected void setIdClient( String idClient ) {
-        IdClient = idClient;
+    protected void setIdPompiste( String idPompiste ) {
+        IdPompiste = idPompiste;
     }
 
     protected String getDaty() {
