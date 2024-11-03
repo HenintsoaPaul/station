@@ -3,9 +3,6 @@ package prelevementLub;
 import bean.CGenUtil;
 import bean.ClassMAPTable;
 import utils.DateUtil;
-import magasin.Magasin;
-import utilisateurstation.UtilisateurStation;
-import utilitaire.UtilDB;
 
 import java.io.Serializable;
 import java.sql.Connection;

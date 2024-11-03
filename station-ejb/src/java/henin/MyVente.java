@@ -1,9 +1,9 @@
 package henin;
 
 import annexe.Produit;
-import bean.CGenUtil;
 import utils.ConstanteStation;
 import utils.DateUtil;
+import utils.EJBGetter;
 import vente.Vente;
 import vente.VenteDetails;
 
@@ -41,7 +41,7 @@ public class MyVente implements Serializable {
     protected VenteDetails creerVenteDetails( Vente vente )
             throws Exception {
         String idProduit = this.getIdProduit();
-        Produit produit = getProduitById( idProduit );
+        Produit produit = EJBGetter.getProduitEJB().getById( idProduit );
 
         VenteDetails vd = new VenteDetails();
         vd.setIdProduit( idProduit );
@@ -110,12 +110,5 @@ public class MyVente implements Serializable {
 
     protected void setIdMagasin( String idMagasin ) {
         IdMagasin = idMagasin;
-    }
-
-    protected Produit getProduitById( String idProduit )
-            throws Exception {
-        String sql = "SELECT * FROM produit WHERE id = '" + idProduit + "'";
-        Produit[] arr = ( Produit[] ) CGenUtil.rechercher( new Produit(), sql );
-        return arr[ 0 ];
     }
 }

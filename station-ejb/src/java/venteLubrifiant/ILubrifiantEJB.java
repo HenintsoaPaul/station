@@ -2,7 +2,6 @@ package venteLubrifiant;
 
 import annexe.Produit;
 import magasin.Magasin;
-import prelevement.Prelevement;
 import stock.EtatStock;
 import vente.Vente;
 
